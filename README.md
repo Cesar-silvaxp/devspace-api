@@ -2,6 +2,8 @@
 
 API REST desenvolvida com Java e Spring Boot para gerenciamento de perfis, projetos, tecnologias e feedbacks.
 
+A aplicação possui regras de negócio para avaliação de projetos, cálculo de nota média, upvotes, filtragem por tecnologia, paginação, tratamento global de erros e documentação interativa com Swagger/OpenAPI.
+
 ## Tecnologias utilizadas
 
 - Java 17
@@ -12,6 +14,15 @@ API REST desenvolvida com Java e Spring Boot para gerenciamento de perfis, proje
 - PostgreSQL
 - Bean Validation
 - Maven
+- Swagger / OpenAPI
+- Docker
+
+## Infraestrutura
+
+- Banco de dados em produção: Supabase PostgreSQL
+- Deploy da API: Render
+- Deploy contínuo integrado ao GitHub
+- Credenciais configuradas por variáveis de ambiente
 
 ## Estrutura do domínio
 
