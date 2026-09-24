@@ -1,13 +1,16 @@
 package com.devspace.api.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.devspace.api.dto.ProjectRequestDTO;
@@ -38,10 +41,19 @@ public class ProjectController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProjectResponseDTO>> findAll() {
+    public ResponseEntity<Page<ProjectResponseDTO>> findAll(
+            @RequestParam(required = false) String technology,
+            Pageable pageable) {
 
-        List<ProjectResponseDTO> response = projectService.findAll();
+        return ResponseEntity.ok(
+                projectService.findAll(technology, pageable)
+        );
+    }
 
-        return ResponseEntity.ok(response);
+    @PutMapping("/{id}/upvote")
+    public ResponseEntity<ProjectResponseDTO> upvote(
+            @PathVariable Long id) {
+
+        return ResponseEntity.ok(projectService.upvote(id));
     }
 }

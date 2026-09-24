@@ -18,6 +18,8 @@ public class Feedback {
 
     private String authorName;
 
+    private Integer rating;
+
     private String comment;
 
     @ManyToOne
@@ -41,6 +43,14 @@ public class Feedback {
 
     public void setAuthorName(String authorName) {
         this.authorName = authorName;
+    }
+
+    public Integer getRating() {
+        return rating;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
     }
 
     public String getComment() {

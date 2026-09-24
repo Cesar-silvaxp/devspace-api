@@ -1,9 +1,10 @@
 package com.devspace.api.service;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,9 +46,13 @@ public class ProjectService {
 
         Set<Technology> technologies = new HashSet<>();
 
-        if (request.getTechnologyIds() != null && !request.getTechnologyIds().isEmpty()) {
+        if (request.getTechnologyIds() != null
+                && !request.getTechnologyIds().isEmpty()) {
+
             technologies = new HashSet<>(
-                    technologyRepository.findAllById(request.getTechnologyIds())
+                    technologyRepository.findAllById(
+                            request.getTechnologyIds()
+                    )
             );
         }
 
@@ -63,12 +68,46 @@ public class ProjectService {
         return toResponseDTO(savedProject);
     }
 
-    public List<ProjectResponseDTO> findAll() {
+    public Page<ProjectResponseDTO> findAll(
+            String technology,
+            Pageable pageable) {
 
-        return projectRepository.findAll()
-                .stream()
-                .map(this::toResponseDTO)
-                .toList();
+        Page<Project> projects;
+
+        if (technology != null && !technology.isBlank()) {
+
+            projects =
+                    projectRepository
+                            .findDistinctByTechnologies_NameIgnoreCase(
+                                    technology,
+                                    pageable
+                            );
+
+        } else {
+
+            projects = projectRepository.findAll(pageable);
+        }
+
+        return projects.map(this::toResponseDTO);
+    }
+
+    @Transactional
+    public ProjectResponseDTO upvote(Long id) {
+
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Projeto não encontrado com o ID: " + id));
+
+        Integer currentUpvotes =
+                project.getUpvotes() != null
+                        ? project.getUpvotes()
+                        : 0;
+
+        project.setUpvotes(currentUpvotes + 1);
+
+        Project savedProject = projectRepository.save(project);
+
+        return toResponseDTO(savedProject);
     }
 
     private ProjectResponseDTO toResponseDTO(Project project) {
@@ -84,7 +123,9 @@ public class ProjectService {
                 project.getDescription(),
                 project.getProjectUrl(),
                 project.getProfile().getId(),
-                technologyIds
+                technologyIds,
+                project.getAverageRating(),
+                project.getUpvotes()
         );
     }
 }
